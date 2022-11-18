@@ -2,7 +2,7 @@ from DevOpsApi.wi import WorkItem, WorkItems, Wit
 
 
 def test_create_get_workitem():
-    wi2 = WorkItem.create(Wit.testcase, "blablub")
+    wi2 = WorkItem.create(Wit.TestCase, "blablub")
     assert wi2.id > 0
     assert wi2.title == "blablub"
     wi = WorkItem.get(wi2.id)
