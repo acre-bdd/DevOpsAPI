@@ -1,9 +1,29 @@
+from lxml import etree
 
 class Wit:
     Epic = "Epic"
     Issue = "Issue"
     Task = "Task"
     TestCase = "Test Case"
+
+
+class Step:
+
+    def __init__(self, action, result=""):
+        self.action = action
+        self.result = result
+
+    def as_xml(self):
+        return Step._template.format(self.action, self.result)
+    
+    def __str__(self):
+        return f"Step: action: {self.action}, result: {self.result}"
+
+    _template = """
+        <step id=\"2\" type=\"ValidateStep\">
+            <parameterizedString isformatted=\"true\">{}</parameterizedString>
+            <parameterizedString isformatted=\"true\">{}</parameterizedString><description/>
+        </step>"""
 
 
 class WorkItem:
@@ -23,6 +43,10 @@ class WorkItem:
     @property
     def AssignedTo(self):
         return self.fields['System.AssignedTo']['displayName']
+
+    @property
+    def WorkItemType(self):
+        return self.fields['System.WorkItemType']
 
     @property
     def Title(self):
@@ -63,6 +87,38 @@ class WorkItem:
 
     def __str__(self):
         return f"{self.id}: {self.title} @{self.AssignedTo}"
+
+
+class TestCase(WorkItem):
+    def create(self, title, area=None):
+        wi = super().create(type=Wit.TestCase, title=title, area=area)
+        return TestCase(wi._c, wi.id, wi.json)
+
+    @property
+    def steps(self):
+        steps = self.fields["Microsoft.VSTS.TCM.Steps"]
+        xsteps = etree.fromstring(steps)
+        return [Step(st[0].text, st[1].text) for st in xsteps]
+
+    @steps.setter
+    def steps(self, steps):
+        strsteps = [step.as_xml() for step in steps]
+        stepxml = f'<steps>{"".join(strsteps)}</steps>'
+        print(stepxml)
+
+        patches = Patches()
+        patches.append(Patch(Ops.add, "Microsoft.VSTS.TCM.Steps", stepxml))
+        response = self._c.patch(f"wit/workitems/{self.id}", patches.json(), is_json=True)
+        response.raise_for_status()
+        self.update()
+
+    def delete(self):
+        response = self._c.delete(f"test/testcases/{self.id}")
+        response.raise_for_status()
+
+    def get(self, id):
+        wi = WorkItem(self._c, id).update()
+        return TestCase(wi._c, wi.id, wi.json)
 
 
 class WorkItems:
