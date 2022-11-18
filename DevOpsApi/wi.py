@@ -37,9 +37,12 @@ class WorkItem:
     @staticmethod
     def create(type, title):
         patch = Patch(Ops.add, "System.Title", title)
-        response = api.get(f"wit/workitems/${type}", patch)
-        return WorkItem(response.json())
+        response = api.post(f"wit/workitems/${type}", patch.json(), is_json=True)
+        print("******")
         print(json.dumps(response.json(), indent=4))
+        print("******")
+        response.raise_for_status()
+        return WorkItem(response.json())
 
     def __str__(self):
         return f"{self.id}: {self.title} @{self.assigned}"
