@@ -1,5 +1,6 @@
 from lxml import etree
 
+
 class Wit:
     Epic = "Epic"
     Issue = "Issue"
@@ -8,14 +9,13 @@ class Wit:
 
 
 class Step:
-
     def __init__(self, action, result=""):
         self.action = action
         self.result = result
 
     def as_xml(self):
         return Step._template.format(self.action, self.result)
-    
+
     def __str__(self):
         return f"Step: action: {self.action}, result: {self.result}"
 
@@ -104,7 +104,6 @@ class TestCase(WorkItem):
     def steps(self, steps):
         strsteps = [step.as_xml() for step in steps]
         stepxml = f'<steps>{"".join(strsteps)}</steps>'
-        print(stepxml)
 
         patches = Patches()
         patches.append(Patch(Ops.add, "Microsoft.VSTS.TCM.Steps", stepxml))
@@ -162,4 +161,3 @@ class Patches(list):
 class Ops:
     add = "add"
     replace = "replace"
-

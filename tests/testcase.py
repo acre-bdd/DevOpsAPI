@@ -1,8 +1,8 @@
 from DevOpsApi import Wit, Step
 
 
-def test_create_get_delete(api):
-    tc1 = api.TestCase.create("this is a Test Case", area="acre\\pytest")
+def test_create_get_delete(api, area):
+    tc1 = api.TestCase.create("this is a Test Case", area=area)
     assert tc1.id > 0
     assert tc1.Title == "this is a Test Case"
     assert tc1.WorkItemType == Wit.TestCase
@@ -14,8 +14,8 @@ def test_create_get_delete(api):
     tc1.delete()
 
 
-def test_steps(api):
-    tc = api.TestCase.create("Test Case with steps", area="acre\\pytest")
+def test_steps(api, area):
+    tc = api.TestCase.create("Test Case with steps", area=area)
     tc.steps = [Step("in1", "out1"), Step("in2", "out2")]
     steps = tc.steps
     assert steps[0].action == "in1"
@@ -24,8 +24,8 @@ def test_steps(api):
     assert steps[1].result == "out2"
 
 
-def test_modify(api):
-    tc = api.TestCase.create("Another Test Case", area="acre\\pytest")
+def test_modify(api, area):
+    tc = api.TestCase.create("Another Test Case", area=area)
     assert tc.Title == "Another Test Case"
     assert tc.WorkItemType == Wit.TestCase
     tc.Title = "Changed Title of Test Case"
@@ -33,13 +33,13 @@ def test_modify(api):
     tc.delete()
 
 
-def test_find(api):
+def test_find(api, area):
     ids = api.WorkItems.find({"System.WorkItemType": Wit.TestCase})
     for id in ids:
         api.TestCase.get(id=id).delete()
-    wi1 = api.TestCase.create("TC 1", area="acre\\pytest")
-    wi2 = api.TestCase.create("TC 2", area="acre\\pytest")
-    wi3 = api.TestCase.create("TC 3", area="acre\\pytest")
+    wi1 = api.TestCase.create("TC 1", area=area)
+    wi2 = api.TestCase.create("TC 2", area=area)
+    wi3 = api.TestCase.create("TC 3", area=area)
     ids = api.WorkItems.find({"System.WorkItemType": Wit.TestCase})
     assert len(ids) == 3
     assert wi1.id in ids
