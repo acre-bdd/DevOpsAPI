@@ -22,3 +22,6 @@ class Api:
     def post(self, fnc, json=None, is_json=False):
         headers = self.headers if is_json else None
         return requests.post(self.uri(fnc), auth=self.auth, headers=headers, json=json)
+
+    def delete(self, fnc):
+        return requests.delete(self.uri(fnc), auth=self.auth)

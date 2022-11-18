@@ -6,6 +6,9 @@ api = Api()
 
 
 class Wit:
+    Epic = "Epic"
+    Issue = "Issue"
+    Task = "Task"
     TestCase = "Test Case"
 
 
@@ -34,13 +37,19 @@ class WorkItem:
         response = api.get(f"wit/workitems/{id}")
         return WorkItem(response.json())
 
-    @staticmethod
-    def create(type, title):
-        patch = Patch(Ops.add, "System.Title", title)
-        response = api.post(f"wit/workitems/${type}", patch.json(), is_json=True)
-        print("******")
+    def delete(self):
+        response = api.delete(f"wit/workitems/{self.id}")
         print(json.dumps(response.json(), indent=4))
-        print("******")
+        response.raise_for_status()
+
+    @staticmethod
+    def create(type, title, area=None):
+        patches = Patches()
+        patches.append(Patch(Ops.add, "System.Title", title))
+        if area:
+            patches.append(Patch(Ops.add, "System.AreaPath", area))
+        response = api.post(f"wit/workitems/${type}", patches.json(), is_json=True)
+        print(json.dumps(response.json(), indent=4))
         response.raise_for_status()
         return WorkItem(response.json())
 
@@ -79,7 +88,12 @@ class Patch:
             "path": f"/fields/{self.field}",
             "value": self.value
         }
-        return [result]
+        return result
+
+
+class Patches(list):
+    def json(self):
+        return [patch.json() for patch in self]
 
 
 class Ops:
