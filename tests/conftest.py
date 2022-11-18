@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from DevOpsApi import Api
+from DevOpsAPI import Api
 
 
 class SetupError(Exception):

@@ -1,4 +1,4 @@
-from DevOpsApi import Wit
+from DevOpsAPI import Wit
 
 
 def test_create_get_delete(api, area):
