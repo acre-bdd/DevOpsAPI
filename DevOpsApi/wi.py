@@ -1,5 +1,4 @@
 import json
-
 from DevOpsApi import Api
 
 api = Api()
@@ -13,20 +12,37 @@ class Wit:
 
 
 class WorkItem:
-    def __init__(self, json=None):
-        self.json = json
+    def __init__(self, id=None, json=None):
+        if id:
+            self._id = id
+        if json:
+            self.json = json
+            self._id = self.id
 
     @property
     def id(self):
         return self.json['id']
 
     @property
-    def assigned(self):
+    def AssignedTo(self):
         return self.fields['System.AssignedTo']['displayName']
 
     @property
-    def title(self):
-        return self.fields['System.Title']
+    def Title(self):
+        return self.fields["System.Title"]
+
+    @Title.setter
+    def Title(self, value):
+        patches = Patches()
+        patches.append(Patch(Ops.replace, "System.Title", value))
+        response = api.patch(f"wit/workitems/{self.id}", patches.json(), is_json=True)
+        response.raise_for_status()
+        self.update()
+
+    def update(self):
+        response = api.get(f"wit/workitems/{self._id}")
+        self.json = response.json()
+        return self
 
     @property
     def fields(self):
@@ -34,12 +50,10 @@ class WorkItem:
 
     @staticmethod
     def get(id):
-        response = api.get(f"wit/workitems/{id}")
-        return WorkItem(response.json())
+        return WorkItem(id).update()
 
     def delete(self):
         response = api.delete(f"wit/workitems/{self.id}")
-        print(json.dumps(response.json(), indent=4))
         response.raise_for_status()
 
     @staticmethod
@@ -49,12 +63,11 @@ class WorkItem:
         if area:
             patches.append(Patch(Ops.add, "System.AreaPath", area))
         response = api.post(f"wit/workitems/${type}", patches.json(), is_json=True)
-        print(json.dumps(response.json(), indent=4))
         response.raise_for_status()
-        return WorkItem(response.json())
+        return WorkItem(None, response.json())
 
     def __str__(self):
-        return f"{self.id}: {self.title} @{self.assigned}"
+        return f"{self.id}: {self.title} @{self.AssignedTo}"
 
 
 class WorkItems:
@@ -64,15 +77,14 @@ class WorkItems:
     def find(filter={}):
         tokens = []
         for (attribute, value) in filter.items():
-            tokens.append(f"[{attribute}] = 'value'")
+            tokens.append(f"[{attribute}] = '{value}'")
         tokenstr = " and ".join(tokens)
         ft = f"Where {tokenstr}" if len(tokens) > 0 else ""
         query = f"Select [System.Id] From WorkItems {ft}"
         search = {'query': query}
         response = api.post("wit/wiql", json=search)
-        print(json.dumps(response.json(), indent=4))
         response.raise_for_status()
-        print(response.text)
+        return [wi['id'] for wi in response.json()['workItems']]
 
 
 class Patch:
@@ -98,3 +110,5 @@ class Patches(list):
 
 class Ops:
     add = "add"
+    replace = "replace"
+
