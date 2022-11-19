@@ -9,8 +9,8 @@
 
 ## Quickstart
 
-    -   Create an PAT on DevOps, give permissions for the scopes you want to
-        access
+-   Create an PAT on DevOps, give permissions for the scopes you want to
+    access
 
 
         from DevOpsAPI import Api, Wit, Step
