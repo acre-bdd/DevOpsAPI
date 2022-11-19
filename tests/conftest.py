@@ -31,6 +31,7 @@ def area():
     area = os.environ.get('AREA')
     if not area:
         raise SetupError(msg)
+    return area
 
 
 @pytest.fixture

@@ -13,9 +13,14 @@ def test_create_get_delete(api, area):
 
 def test_modify(api, area):
     wi = api.WorkItem.create(Wit.Task, "modify task", area=area)
+    wi.Description = "description1"
     assert wi.Title == "modify task"
+    assert wi.Description == "description1"
     wi.Title = "modified task title"
-    assert wi.Title == "modified task title"
+    wi.Description = "description2"
+    wi2 = api.WorkItem.get(wi.id)
+    assert wi2.Title == "modified task title"
+    assert wi2.Description == "description2"
     wi.delete()
 
 

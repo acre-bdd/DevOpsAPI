@@ -38,10 +38,14 @@ def test_find(api, area):
     for id in ids:
         api.TestCase.get(id=id).delete()
     wi1 = api.TestCase.create("TC 1", area=area)
+    wi1.Description = "This is a test case"
     wi2 = api.TestCase.create("TC 2", area=area)
     wi3 = api.TestCase.create("TC 3", area=area)
     ids = api.WorkItems.find({"System.WorkItemType": Wit.TestCase})
     assert len(ids) == 3
     assert wi1.id in ids
     assert wi2.id in ids
+    wi11 = api.TestCase.get(wi1.id)
+    assert wi11.Description == "This is a test case"
+
     assert wi3.id in ids

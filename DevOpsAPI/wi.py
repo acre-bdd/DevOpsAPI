@@ -1,3 +1,4 @@
+import json
 from lxml import etree
 
 
@@ -49,14 +50,35 @@ class WorkItem:
         return self.fields['System.WorkItemType']
 
     @property
+    def Description(self):
+        return self.fields["System.Description"]
+
+    @Description.setter
+    def Description(self, value):
+        self._update_field("System.Description", value)
+
+    @property
     def Title(self):
         return self.fields["System.Title"]
 
     @Title.setter
     def Title(self, value):
+        self._update_field("System.Title", value)
+
+    @property
+    def Tags(self):
+        return self.fields["System.Tags"]
+
+    @Tags.setter
+    def Tags(self, value):
+        self._update_field("System.Tags", value)
+
+    def _update_field(self, fieldname, value):
         patches = Patches()
-        patches.append(Patch(Ops.replace, "System.Title", value))
+        patches.append(Patch(Ops.replace, fieldname, value))
         response = self._c.patch(f"wit/workitems/{self.id}", patches.json(), is_json=True)
+        if response.status_code != 200:
+            print(json.dumps(response.json(), indent=4))
         response.raise_for_status()
         self.update()
 
@@ -95,13 +117,13 @@ class TestCase(WorkItem):
         return TestCase(wi._c, wi.id, wi.json)
 
     @property
-    def steps(self):
+    def Steps(self):
         steps = self.fields["Microsoft.VSTS.TCM.Steps"]
         xsteps = etree.fromstring(steps)
         return [Step(st[0].text, st[1].text) for st in xsteps]
 
-    @steps.setter
-    def steps(self, steps):
+    @Steps.setter
+    def Steps(self, steps):
         strsteps = [step.as_xml() for step in steps]
         stepxml = f'<steps>{"".join(strsteps)}</steps>'
 
@@ -127,7 +149,12 @@ class WorkItems:
     def find(self, filter={}):
         tokens = []
         for (attribute, value) in filter.items():
-            tokens.append(f"[{attribute}] = '{value}'")
+            if value[0] == "~":
+                value = value[1:]
+                op = "Contains"
+            else:
+                op = "="
+            tokens.append(f"[{attribute}] {op} '{value}'")
         tokenstr = " and ".join(tokens)
         ft = f"Where {tokenstr}" if len(tokens) > 0 else ""
         query = f"Select [System.Id] From WorkItems {ft}"
