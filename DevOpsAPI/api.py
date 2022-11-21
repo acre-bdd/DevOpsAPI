@@ -1,4 +1,5 @@
 from .wi import WorkItem, WorkItems, TestCase
+from .testing import TestRun
 from .wi import Wit, Step  # noqa: F401
 from .connection import Connection
 
@@ -18,3 +19,7 @@ class Api:
     @property
     def WorkItems(self):
         return WorkItems(self._connection)
+
+    @property
+    def TestRun(self):
+        return TestRun(self._connection)
