@@ -67,9 +67,25 @@ class TestRuns(FunctionManager):
         super().__init__("test/runs", TestRun, _c, is_json=False)
 
 
+class TestSuite(FunctionClass):
+    def __init__(self, _c, json=None):
+        super().__init__("testplan/suites", _c, json)
+
+
+class TestPlanSuites(FunctionManager):
+    def __init__(self, _c, planid):
+        self.planid = planid
+        super().__init__(f"testplan/Plans/{planid}/suites", TestSuite, _c, is_json=False)
+
+
 class TestPlan(FunctionClass):
     def __init__(self, _c, json):
         return super().__init__("testplan/plans", _c, json)
+
+    @property
+    def suites(self):
+        return TestPlanSuites(self._c, planid=self.id).list()
+
 
 
 class TestPlans(FunctionManager):
