@@ -15,11 +15,15 @@ def test_get_testrun(api):
     tr = api.TestRun.get(32)
     
 
-def test_create_testplan(api):
-    tr = api.TestPlans.create(name="automated testplan")
-    assert tr.name == "automated testplan"
-    assert tr.id > 0
-    print(tr)
+def test_create_list_delete_testplan(api):
+    tp = api.TestPlans.create(name="automated testplan")
+    assert tp.name == "automated testplan"
+    assert tp.id > 0
+    tpl = api.TestPlans.list()
+    assert tp.name in [tp.name for tp in tpl]
+    tp.delete()
+    tpl = api.TestPlans.list()
+    assert tp.name not in [tp.name for tp in tpl]
 
 
 def test_create_testrun(api):

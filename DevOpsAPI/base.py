@@ -8,6 +8,9 @@ class FunctionClass:
         self._c = _c
         self.json = json
 
+    def delete(self):
+        self._c.delete(f"{self.fnc}/{self.id}")
+
     def __getattr__(self, name):
         return self.json[name]
 
