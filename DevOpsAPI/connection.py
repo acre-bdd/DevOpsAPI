@@ -25,7 +25,7 @@ class Connection:
 
     def request(self, rt, fnc, json=None, is_json=False):
         headers = self.headers if is_json else None
-        print(f"calling: {rt} {fnc}")
+        print(f"calling: {rt}:{self._uri(fnc)}")
         response = requests.request(rt, self._uri(fnc), json=json, auth=self._auth, headers=headers)
         if response.status_code != 200:
             logging.warning(js.dumps(response.json(), indent=4))
@@ -37,6 +37,7 @@ class Connection:
         return (self.user, self.apikey)
 
     def _uri(self, fnc):
-        return f"https://dev.azure.com/{self.organization}/{self.project}/_apis/{fnc}?api-version=7.0"
+        project = f"/{self.project}" if self.project else ""
+        return f"https://dev.azure.com/{self.organization}{project}/_apis/{fnc}?api-version=7.0"
 
     
