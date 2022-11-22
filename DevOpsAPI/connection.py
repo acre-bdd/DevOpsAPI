@@ -27,9 +27,10 @@ class Connection:
         headers = self.headers if is_json else None
         print(f"calling: {rt}:{self._uri(fnc)}")
         response = requests.request(rt, self._uri(fnc), json=json, auth=self._auth, headers=headers)
-        if response.status_code != 200:
+        if response.status_code >= 300:
+            print(js.dumps(response.json(), indent=4))
             logging.warning(js.dumps(response.json(), indent=4))
-        response.raise_for_status()
+            response.raise_for_status()
         return response
 
     @property
