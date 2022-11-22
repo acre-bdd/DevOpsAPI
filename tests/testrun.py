@@ -64,7 +64,9 @@ def test_add_testrun_to_testplan(testplan, area, api):
     assert len(ts.TestCases.list()) == 0
     tc = ts.TestCases.add([310])
     print(tc)
-    assert len(ts.TestCases.list()) == 1
+    tcs = ts.TestCases.list()
+    assert len(tcs) == 1
+    assert tcs[0].id == str(310)
     # tc1 = api.TestCase.create("pytest_addtestrun_testcase1", area=area)
     # tp.add_testcase(tc1)
     # tr = api.TestRuns.create(name="testrun1", plan={'id': tp.id})

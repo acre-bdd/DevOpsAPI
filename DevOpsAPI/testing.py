@@ -70,6 +70,11 @@ class TestRuns(FunctionManager):
 class TestSuiteTestCase(FunctionClass):
     def __init__(self, _c, json=None):
         super().__init__("test/Plans/{self.planid}/suites/{self.suiteid}/testcases", _c, json)
+        _dump2(json)
+
+    @property
+    def id(self):
+        return self.testCase['id']
 
 
 class TestSuiteTestCases(FunctionManager):
@@ -121,6 +126,9 @@ class TestPlans(FunctionManager):
     def __init__(self, _c):
         super().__init__("testplan/plans", TestPlan, _c)
 
+
+def _dump2(js):
+    print(json.dumps(js, indent=4))
 
 def _dump(response):
     print(f"response: {json.dumps(response.json(), indent=4)}")
