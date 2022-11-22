@@ -67,15 +67,45 @@ class TestRuns(FunctionManager):
         super().__init__("test/runs", TestRun, _c, is_json=False)
 
 
+class TestSuiteTestCase(FunctionClass):
+    def __init__(self, _c, json=None):
+        super().__init__("test/Plans/{self.planid}/suites/{self.suiteid}/testcases", _c, json)
+
+
+class TestSuiteTestCases(FunctionManager):
+    def __init__(self, _c, planid, suiteid):
+        self.planid = planid
+        self.suiteid = suiteid
+        super().__init__(f"test/Plans/{self.planid}/suites/{self.suiteid}/testcases", TestSuiteTestCase, _c, json)
+
+    def add(self, ids):
+        ids = [str(id) for id in ids]
+        self._c.post(f"{self.fnc}/{','.join(ids)}")
+
+
 class TestSuite(FunctionClass):
     def __init__(self, _c, json=None):
-        super().__init__("testplan/suites", _c, json)
+        self.planid = None
+        super().__init__("test/Plans/{self.planid}/suites", _c, json)
+
+    @property
+    def TestCases(self):
+        return TestSuiteTestCases(self._c, self.planid, self.id)
+
+
+# class TestPlanSuiteTestCases(FunctionManager):
 
 
 class TestPlanSuites(FunctionManager):
     def __init__(self, _c, planid):
         self.planid = planid
         super().__init__(f"testplan/Plans/{planid}/suites", TestSuite, _c, is_json=False)
+
+    def list(self):
+        suites = super().list()
+        for suite in suites:
+            suite.planid = self.planid
+        return suites
 
 
 class TestPlan(FunctionClass):
@@ -85,7 +115,6 @@ class TestPlan(FunctionClass):
     @property
     def suites(self):
         return TestPlanSuites(self._c, planid=self.id).list()
-
 
 
 class TestPlans(FunctionManager):
