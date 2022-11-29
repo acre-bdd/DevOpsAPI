@@ -1,6 +1,6 @@
 [project]
 name = "DevOpsAPI"
-version = "0.1.0"
+version = "0.1.1"
 description="A simple object-oriented python interface to the DevOps REST API"
 authors = [
     { name="Claudio Klingler", email="ck@realtime-projects.com"}
