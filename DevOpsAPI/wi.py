@@ -1,4 +1,5 @@
 import json
+import re
 from lxml import etree
 
 
@@ -7,6 +8,9 @@ class Wit:
     Issue = "Issue"
     Task = "Task"
     TestCase = "Test Case"
+    Requirement = "Requirement"
+    Epic = "Epic"
+    Feature = "Feature"
 
 
 class Step:
@@ -83,13 +87,24 @@ class WorkItem:
         self.update()
 
     def update(self):
-        response = self._c.get(f"wit/workitems/{self._id}")
+        # self._c.get("wit/fields")
+        response = self._c.get(f"wit/workitems/{self._id}", expand="relations")
         self.json = response.json()
         return self
 
     @property
     def fields(self):
         return self.json['fields']
+
+    @property
+    def childs(self):
+        ids = []
+        for relation in self.json['relations']:
+            if relation['rel'] != "System.LinkTypes.Hierarchy-Forward":
+                continue
+            m = re.match(r'https.*/(\d+)$', relation['url'])
+            ids.append(int(m.group(1)))
+        return ids
 
     def get(self, id):
         return WorkItem(self._c, id).update()
