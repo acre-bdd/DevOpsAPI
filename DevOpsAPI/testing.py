@@ -44,7 +44,7 @@ class TestResults:
 
 
 class TestRun(FunctionClass):
-    def __init__(self, _c, json):
+    def __init__(self, _c, json=None):
         return super().__init__("test/runs", _c, json)
 
     def add(self, result):

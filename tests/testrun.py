@@ -21,11 +21,17 @@ def test_get_testresults(api):
 
 
 def test_get_testrun(api):
-    tr = api.TestRun.get(32)
+    tr = api.TestRuns.get(32)
     
 
-def xtest_create_keep(api):
+def disabled_test_create_keep(api):
     tp = api.TestPlans.create(name="my testplan")
+
+
+def disabled_test_delete_all_testplans(api):
+    tpl = api.TestPlans.list()
+    for tp in tpl:
+        tp.delete()
 
 
 def test_create_list_delete_testplan(api):
@@ -33,6 +39,7 @@ def test_create_list_delete_testplan(api):
     assert tp.name == "automated testplan"
     assert tp.id > 0
     tpl = api.TestPlans.list()
+    print([tp.name for tp in tpl])
     assert tp.name in [tp.name for tp in tpl]
     tp.delete()
     tpl = api.TestPlans.list()
