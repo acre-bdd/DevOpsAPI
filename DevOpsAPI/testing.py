@@ -1,7 +1,11 @@
 from enum import Enum
 import json
+import logging
 
 from .base import FunctionManager, FunctionClass
+
+log = logging.getLogger(__name__)
+
 
 class TestResult:
     class State(Enum):
@@ -49,7 +53,10 @@ class TestRun(FunctionClass):
 
     def add(self, result):
         body = [{
-            "testCase": {"id": result.tid, "url": "https://dev.azure.com/ck0548/d676c54f-6ab2-4a78-9c44-43f0b7bd2d3d/_apis/wit/workItems/330"},
+            "testCase": {
+                "id": result.tid,
+                "url": f"https://dev.azure.com/ck0548/d676c54f-6ab2-4a78-9c44-43f0b7bd2d3d/_apis/wit/workItems/{result.tid}"
+            },
             # "TestCaseTitle": "huhu",
             # "automatedTestName": "huhu",
             "id": result.tid,
@@ -57,8 +64,8 @@ class TestRun(FunctionClass):
             "outcome": result.outcome
         }]
 
-        print(body)
-        response = self._c.post(f"test/runs/{self.id}/results", body, is_json=False)
+        logging.debug(body)
+        response = self._c.post(f"test/runs/{self.id}/results", json=body, is_json=False)
         _dump(response)
 
 
@@ -74,7 +81,7 @@ class TestSuiteTestCase(FunctionClass):
 
     @property
     def id(self):
-        return self.testCase['id']
+        return int(self.testCase['id'])
 
 
 class TestSuiteTestCases(FunctionManager):
@@ -128,7 +135,8 @@ class TestPlans(FunctionManager):
 
 
 def _dump2(js):
-    print(json.dumps(js, indent=4))
+    logging.debug(json.dumps(js, indent=4))
+
 
 def _dump(response):
-    print(f"response: {json.dumps(response.json(), indent=4)}")
+    log.debug(f"response: {json.dumps(response.json(), indent=4)}")

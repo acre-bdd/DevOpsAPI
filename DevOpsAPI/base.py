@@ -1,5 +1,9 @@
-from .connection import Connection
+import logging
 import json
+
+from .connection import Connection
+
+log = logging.getLogger(__name__)
 
 
 class FunctionClass:
@@ -45,9 +49,9 @@ class FunctionManager:
 
     def _create(self, data):
         response = self._c.post(self.fnc, json=data, is_json=self.is_json)
-        print(f"response: {_dump(response)}")
+        log.debug(f"FunctionManager::create: response: {_dump(response)}")
         return response.json()
 
 
 def _dump(response):
-    print(f"response: {json.dumps(response.json(), indent=4)}")
+    log.debug(f"response: {json.dumps(response.json(), indent=4)}")
