@@ -2,6 +2,8 @@ import json as js
 import requests
 import logging
 
+log = logging.getLogger(__name__)
+
 
 class Connection:
     def __init__(self, organization, project, user, apikey):
@@ -23,10 +25,10 @@ class Connection:
     def patch(self, *args, **kwargs):
         return self.request("patch", *args, **kwargs)
 
-    def request(self, rt, fnc, json=None, is_json=False):
+    def request(self, rt, fnc, expand=None, json=None, is_json=False):
         headers = self.headers if is_json else None
-        print(f"calling: {rt}:{self._uri(fnc)}")
-        response = requests.request(rt, self._uri(fnc), json=json, auth=self._auth, headers=headers)
+        log.debug(f"calling: {rt}:{self._uri(fnc, expand)}")
+        response = requests.request(rt, self._uri(fnc, expand), json=json, auth=self._auth, headers=headers)
         if response.status_code >= 300:
             print(js.dumps(response.json(), indent=4))
             logging.warning(js.dumps(response.json(), indent=4))
@@ -37,8 +39,7 @@ class Connection:
     def _auth(self):
         return (self.user, self.apikey)
 
-    def _uri(self, fnc):
+    def _uri(self, fnc, expand):
         project = f"/{self.project}" if self.project else ""
-        return f"https://dev.azure.com/{self.organization}{project}/_apis/{fnc}?api-version=7.0"
-
-    
+        expand = f"$expand={expand}&" if expand else ""
+        return f"https://dev.azure.com/{self.organization}{project}/_apis/{fnc}?{expand}api-version=7.0"
