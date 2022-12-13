@@ -80,7 +80,7 @@ class WorkItem:
     def _update_field(self, fieldname, value):
         patches = Patches()
         patches.append(Patch(Ops.replace, fieldname, value))
-        response = self._c.patch(f"wit/workitems/{self.id}", patches.json(), is_json=True)
+        response = self._c.patch(f"wit/workitems/{self.id}", json=patches.json(), is_json=True)
         if response.status_code != 200:
             print(json.dumps(response.json(), indent=4))
         response.raise_for_status()
@@ -118,7 +118,7 @@ class WorkItem:
         patches.append(Patch(Ops.add, "System.Title", title))
         if area:
             patches.append(Patch(Ops.add, "System.AreaPath", area))
-        response = self._c.post(f"wit/workitems/${type}", patches.json(), is_json=True)
+        response = self._c.post(fnc=f"wit/workitems/${type}", json=patches.json(), is_json=True)
         response.raise_for_status()
         return WorkItem(self._c, None, response.json())
 
