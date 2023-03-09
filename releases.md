@@ -2,6 +2,7 @@
 > not yet released
 
 -   Basic Support for test runs (api.TestRun)
+-   Add TestConfiguration class
 
 # 0.1.0
 > 2022-11-19
