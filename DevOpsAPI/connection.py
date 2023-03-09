@@ -27,9 +27,11 @@ class Connection:
 
     def request(self, rt, fnc, expand=None, json=None, is_json=False):
         headers = self.headers if is_json else None
-        log.warning(f"func is {fnc}")
+        # log.warning(f"func is {fnc}")
         log.debug(f"calling: {rt}:{self._uri(fnc, expand)}")
         response = requests.request(rt, self._uri(fnc, expand), json=json, auth=self._auth, headers=headers)
+        if response.status_code >= 400:
+            response.raise_for_status()
         if response.status_code >= 300:
             log.error(js.dumps(response.json(), indent=4))
             logging.warning(js.dumps(response.json(), indent=4))
