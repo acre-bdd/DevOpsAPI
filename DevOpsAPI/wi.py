@@ -125,6 +125,13 @@ class WorkItem:
     def __str__(self):
         return f"{self.id}: {self.title} @{self.AssignedTo}"
 
+    def __getattr__(self, name):
+        _lookups = [f"System.{name}", f"Custom.{name}", name]
+        for lookup in _lookups:
+            if lookup in self.fields:
+                return self.fields[lookup]
+        return None
+
 
 class TestCase(WorkItem):
     def create(self, title, area=None):
