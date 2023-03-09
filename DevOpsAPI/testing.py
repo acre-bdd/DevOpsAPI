@@ -94,7 +94,7 @@ class TestConfigurations(FunctionManager):
 class TestSuiteTestCase(FunctionClass):
     def __init__(self, _c, json=None):
         super().__init__("test/Plans/{self.planid}/suites/{self.suiteid}/testcases", _c, json)
-        _dump2(json)
+        # _dump2(json)
 
     @property
     def id(self):
