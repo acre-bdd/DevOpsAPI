@@ -100,6 +100,15 @@ class TestSuiteTestCase(FunctionClass):
     def id(self):
         return int(self.testCase['id'])
 
+    @property
+    def configurations(self):
+        _result = []
+        pas = self.pointAssignments
+        for pa in pas:
+            pac = pa['configuration']
+            _result.append(TestConfigurations(self._c).get(pac['id']))
+        return _result
+
 
 class TestSuiteTestCases(FunctionManager):
     def __init__(self, _c, planid, suiteid):
