@@ -1,5 +1,5 @@
 from .wi import WorkItem, WorkItems, TestCase
-from .testing import TestRun, TestResults, TestRuns, TestPlans
+from .testing import TestRun, TestResults, TestRuns, TestPlans, TestConfiguration, TestConfigurations
 from .wi import Wit, Step  # noqa: F401
 from .projects import Projects, Project  # noqa: F401
 from .connection import Connection
@@ -40,6 +40,14 @@ class Api:
     @property
     def TestPlans(self):
         return TestPlans(self._connection)
+
+    @property
+    def TestConfiguration(self):
+        return TestConfiguration(self._connection)
+
+    @property
+    def TestConfigurations(self):
+        return TestConfigurations(self._connection)
 
     @property
     def Projects(self):

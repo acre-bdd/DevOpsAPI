@@ -74,6 +74,23 @@ class TestRuns(FunctionManager):
         super().__init__("test/runs", TestRun, _c, is_json=False)
 
 
+class TestConfiguration(FunctionClass):
+    def __init__(self, _c, json=None):
+        return super().__init__("testplan/configurations", _c, json)
+
+    @property
+    def values(self):
+        _result = {}
+        for value in self.json['values']:
+            _result[value['name']] = value['value']
+        return _result
+
+
+class TestConfigurations(FunctionManager):
+    def __init__(self, _c):
+        super().__init__("testplan/configurations", TestConfiguration, _c, is_json=False)
+
+
 class TestSuiteTestCase(FunctionClass):
     def __init__(self, _c, json=None):
         super().__init__("test/Plans/{self.planid}/suites/{self.suiteid}/testcases", _c, json)
