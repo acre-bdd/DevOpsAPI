@@ -43,8 +43,9 @@ class FunctionManager:
             return response.json()['values']
 
     def get_properties(self, id):
-        response = self._c.get(f"/{self.fnc}/{id}")
-        _dump(response)
+        url = f"/{self.fnc}/{id}"
+        response = self._c.get(url)
+#        _dump(response)
         return response.json()
 
     def _create(self, data):
