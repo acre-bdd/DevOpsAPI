@@ -171,7 +171,9 @@ class WorkItems:
     def find(self, filter={}):
         tokens = []
         for (attribute, value) in filter.items():
-            if value[0] == "~":
+            if isinstance(value, dict):
+                (op, value) = list(value.items())[0]
+            elif value[0] == "~":
                 value = value[1:]
                 op = "Contains"
             else:
