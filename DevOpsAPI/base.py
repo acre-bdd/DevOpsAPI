@@ -1,8 +1,6 @@
 import logging
 import json
 
-from .connection import Connection
-
 log = logging.getLogger(__name__)
 
 
@@ -17,6 +15,10 @@ class FunctionClass:
 
     def __getattr__(self, name):
         return self.json[name]
+
+    def set(self, name, value):
+        update = {name: value}
+        self._c.patch(f"{self.fnc}/{self.id}", json=update)
 
 
 class FunctionManager:
