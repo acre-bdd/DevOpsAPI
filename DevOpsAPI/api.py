@@ -1,5 +1,6 @@
 from .wi import WorkItem, WorkItems, TestCase
 from .testing import TestRun, TestResults, TestRuns, TestPlans, TestConfiguration, TestConfigurations
+from .testing import TestPoint, TestPoints
 from .wi import Wit, Step  # noqa: F401
 from .projects import Projects, Project  # noqa: F401
 from .connection import Connection
@@ -28,6 +29,9 @@ class Api:
     @property
     def TestRun(self):
         return TestRun(self._connection)
+
+    def TestPoints(self, planid, suiteid):
+        return TestPoints(self._connection, planid, suiteid)
 
     @property
     def TestRuns(self):

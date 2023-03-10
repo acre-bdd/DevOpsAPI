@@ -33,9 +33,13 @@ class TestResult:
         inprogress = "InProgress"
         notimpacted = "NotImpacted"
 
-    def __init__(self, outcome, tid):
+    def __init__(self, outcome, id, testpointid, testconfigurationid, title, rev):
         self.outcome = outcome
-        self.tid = tid
+        self.id = id
+        self.testpointid = testpointid
+        self.testconfigurationid = testconfigurationid
+        self.title = title
+        self.rev = rev
 
 
 class TestResults:
@@ -47,26 +51,41 @@ class TestResults:
         _dump(response)
 
 
+class TestPoint(FunctionClass):
+    def __init__(self, _c, json=None):
+        return super().__init__("test/Plans", _c, json)
+
+
+class TestPoints(FunctionManager):
+    def __init__(self, _c, planid, suiteid):
+        super().__init__(f"test/Plans/{planid}/Suites/{suiteid}/points", TestPoint, _c, is_json=False)
+
+
 class TestRun(FunctionClass):
     def __init__(self, _c, json=None):
         return super().__init__("test/runs", _c, json)
 
     def add(self, result):
         body = [{
-            "testCase": {
-                "id": result.tid,
-                "url": f"https://dev.azure.com/ck0548/d676c54f-6ab2-4a78-9c44-43f0b7bd2d3d/_apis/wit/workItems/{result.tid}"
-            },
+            "testCase": {"id": result.id},
+            "testPoint": {"id": result.testpointid},
+            "testCaseTitle": result.title,
+            "testCaseRevision": result.rev,
+            "testCaseReferenceId": result.id,
+            "configuration": {"id": result.testconfigurationid},
             # "TestCaseTitle": "huhu",
             # "automatedTestName": "huhu",
-            "id": result.tid,
-            "project": "d676c54f-6ab2-4a78-9c44-43f0b7bd2d3d",
+            # "id": result.id,
+            # "project": "d676c54f-6ab2-4a78-9c44-43f0b7bd2d3d",
             "outcome": result.outcome
         }]
 
         logging.debug(body)
         response = self._c.post(f"test/runs/{self.id}/results", json=body, is_json=False)
         _dump(response)
+
+    def close(self, state="Completed"):
+        self.set('state', state)
 
 
 class TestRuns(FunctionManager):
@@ -129,6 +148,10 @@ class TestSuite(FunctionClass):
     @property
     def TestCases(self):
         return TestSuiteTestCases(self._c, self.planid, self.id)
+
+    @property
+    def TestPoints(self):
+        return TestPoints(self._c, planid=self.planid, suiteid=self.id)
 
 
 # class TestPlanSuiteTestCases(FunctionManager):
