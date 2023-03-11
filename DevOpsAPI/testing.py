@@ -55,10 +55,19 @@ class TestPoint(FunctionClass):
     def __init__(self, _c, json=None):
         return super().__init__("test/Plans", _c, json)
 
+    @property
+    def TestConfiguration(self):
+        return TestConfigurations(self._c).get(self.configuration['id'])
+
 
 class TestPoints(FunctionManager):
     def __init__(self, _c, planid, suiteid):
         super().__init__(f"test/Plans/{planid}/Suites/{suiteid}/points", TestPoint, _c, is_json=False)
+
+    def find(self, tcid):
+        query = f"?testCaseId={tcid}&isRecursive=true"
+        response = self._c.get(self.fnc + query)
+        return [TestPoint(self._c, json=js) for js in response.json()['value']]
 
 
 class TestRun(FunctionClass):
