@@ -33,13 +33,23 @@ class TestResult:
         inprogress = "InProgress"
         notimpacted = "NotImpacted"
 
-    def __init__(self, outcome, id, testpointid, testconfigurationid, title, rev):
-        self.outcome = outcome
-        self.id = id
-        self.testpointid = testpointid
-        self.testconfigurationid = testconfigurationid
-        self.title = title
-        self.rev = rev
+    def __init__(self, outcome, tcid, testpointid, testconfigurationid, title, rev):
+        self._data = {
+            "TestCase": {"id": tcid},
+            "testPoint": {"id": testpointid},
+            "testCaseTitle": title,
+            "testCaseRevision": rev,
+            "testCaseReferenceId": tcid,
+            "configuration": {"id": testconfigurationid},
+            "outcome": outcome,
+            "customFields": {}
+        }
+
+    def set(self, name, value):
+        self._data[name] = value
+
+    def setCustomField(self, name, value):
+        self._data['customFields'][name] = value
 
 
 class TestResults:
@@ -75,20 +85,7 @@ class TestRun(FunctionClass):
         return super().__init__("test/runs", _c, json)
 
     def add(self, result):
-        body = [{
-            "testCase": {"id": result.id},
-            "testPoint": {"id": result.testpointid},
-            "testCaseTitle": result.title,
-            "testCaseRevision": result.rev,
-            "testCaseReferenceId": result.id,
-            "configuration": {"id": result.testconfigurationid},
-            # "TestCaseTitle": "huhu",
-            # "automatedTestName": "huhu",
-            # "id": result.id,
-            # "project": "d676c54f-6ab2-4a78-9c44-43f0b7bd2d3d",
-            "outcome": result.outcome
-        }]
-
+        body = [result._data]
         logging.debug(body)
         response = self._c.post(f"test/runs/{self.id}/results", json=body, is_json=False)
         _dump(response)
