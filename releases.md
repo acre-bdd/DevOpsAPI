@@ -5,6 +5,7 @@
 -   Add TestConfiguration class
 -   Add TestPoint class
 -   WorkItem.query: support operators by dict
+-   Add WorkItem.AreaPath property for reading / writing `System.AreaPath` attribute
 
 # 0.1.0
 > 2022-11-19

@@ -50,6 +50,14 @@ class WorkItem:
         return self.fields['System.AssignedTo']['displayName']
 
     @property
+    def AreaPath(self):
+        return self.fields['System.AreaPath']
+
+    @AreaPath.setter
+    def AreaPath(self, value):
+        self._update_field("System.AreaPath", value)
+
+    @property
     def WorkItemType(self):
         return self.fields['System.WorkItemType']
 
