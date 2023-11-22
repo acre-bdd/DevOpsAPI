@@ -7,7 +7,7 @@
     from DevOpsAPI import Api, Wit, Step
 
     api = Api(organisation="myorg",
-              projet="myproject",
+              project="myproject",
               user="your@email.com",
               apikey="PAT")
     ```
