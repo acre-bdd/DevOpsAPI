@@ -29,3 +29,4 @@ build-backend = "setuptools.build_meta"
 [project.urls]
 "Homepage" = "https://github.com/acre-bdd/DevOpsAPI"
 "Bug Tracker" = "https://github.com/acre-bdd/DevOpsAPI/issues"
+"Documentation" = "https://acre-bdd.github.io/DevOpsAPI"
