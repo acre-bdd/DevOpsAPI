@@ -25,16 +25,16 @@
 -    Create a Test Case
 
     ``` python
-     wi = api.TestCase.create(title="First TestCase",
+    wi = api.TestCase.create(title="First TestCase",
                              area="my\\area")
-     wi.Description = "Describe your Test Case"
-     wi.Tags = "tag1,tag2"
+    wi.Description = "Describe your Test Case"
+    wi.Tags = "tag1,tag2"
     ```
 
 -    Add some Steps to the Test Case
 
     ``` python
-     step1 = Step("Given I use DevOpsAPI")
-     step2 = Step("Then I am happy")
-     wi.Steps = [step1, step2]
-     ```
+    step1 = Step("Given I use DevOpsAPI")
+    step2 = Step("Then I am happy")
+    wi.Steps = [step1, step2]
+    ```
