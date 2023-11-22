@@ -1,0 +1,70 @@
+site_name: DevOpsAPI
+theme:
+  name: material
+  features:
+    navigation.path
+    navigation.tabs
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/mastodon 
+      link: https://squidfunk.github.io/mkdocs-material/
+
+extra_css:
+  - static/style.css
+
+markdown_extensions:
+  - toc:
+      permalink: true
+      separator: "-"
+  - attr_list
+  - def_list
+  - tables
+  - pymdownx.tilde
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.snippets
+  - callouts
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true   
+  - admonition
+  - pymdownx.details
+  - footnotes
+  - mdx_gh_links:
+      user: mkdocs
+      repo: mkdocs
+  - md_in_html
+  - mkdocs-click
+
+plugins:
+  - ezglossary:
+      strict: true
+      list_definitions: true
+      list_references: true
+      inline_refs: none
+      tooltip: full
+      use_default: true
+      sections:
+        - setting
+        - term
+        - demo
+        - configuration
+      section_config:
+        - name: demo
+          inline_refs: short
+        - name: term
+          inline_refs: short
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            heading_level: 4
+            show_source: false
+            show_root_heading: true
+            show_symbol_type_toc: true
+            show_category_heading: true
+            summary: true
