@@ -24,11 +24,15 @@ class Step:
     def __str__(self):
         return f"Step: action: {self.action}, result: {self.result}"
 
-    _template = """
-        <step id=\"2\" type=\"ValidateStep\">
-            <parameterizedString isformatted=\"true\">{}</parameterizedString>
-            <parameterizedString isformatted=\"true\">{}</parameterizedString><description/>
-        </step>"""
+    _template = re.sub(r"\n", "", """
+<step type=\"ActionStep\">
+<parameterizedString isformatted=\"true\">
+&lt;DIV&gt;&lt;P&gt;{}&lt;/P&gt;&lt;/DIV&gt;
+</parameterizedString>
+<parameterizedString isformatted=\"true\">
+&lt;DIV&gt;&lt;P&gt;{}&lt;/P&gt;&lt;/DIV&gt;
+</parameterizedString><description/>
+</step>""")
 
 
 class WorkItem:
@@ -159,7 +163,7 @@ class TestCase(WorkItem):
 
         patches = Patches()
         patches.append(Patch(Ops.add, "Microsoft.VSTS.TCM.Steps", stepxml))
-        response = self._c.patch(f"wit/workitems/{self.id}", patches.json(), is_json=True)
+        response = self._c.patch(f"wit/workitems/{self.id}", json=patches.json(), is_json=True)
         response.raise_for_status()
         self.update()
 
@@ -204,7 +208,6 @@ class Patch:
 
     def json(self):
         result = {
-            "from": None,
             "op": self.operation,
             "path": f"/fields/{self.field}",
             "value": self.value
