@@ -13,6 +13,85 @@ class Wit:
     Feature = "Feature"
 
 
+class LinkType:
+    Tests = "Microsoft.VSTS.Common.TestedBy-Reverse"
+    TestedBy = "Microsoft.VSTS.Common.TestedBy"
+
+
+class Link:
+    def __init__(self, id, parent, json):
+        self._id = id
+        self._parent = parent
+        self._json = json
+
+    @property
+    def type(self):
+        return self._json['rel']
+
+    @property
+    def url(self):
+        return self._json['url']
+
+    @property
+    def target_id(self):
+        return self.url.split("/")[-1]
+
+    @property
+    def target(self):
+        return WorkItems.get(self.target_id)
+
+    def __str__(self):
+        return f"Link[{self.type}] -> {self.target_id}"
+
+    def remove(self):
+        patch = {
+            "op": Ops.remove,
+            "path": f"/relations/{self._id}",
+        }
+        response = self._parent._wi._c.patch(f"wit/workitems/{self._parent._wi.id}", json=[patch], is_json=True)
+        if response.status_code != 200:
+            print(json.dumps(response.json(), indent=4))
+        response.raise_for_status()
+        self._parent._wi.update()
+
+
+class Links:
+    def __init__(self, wi):
+        self._wi = wi
+
+    def filter(self, linktype=None):
+        """ Return a list of all links of given type """
+        if 'relations' not in self._wi.json:
+            return []
+        alllinks = []
+        relations = self._wi.json['relations']
+        for ii in range(0, len(relations)):
+            alllinks.append(Link(ii, self, relations[ii]))
+
+        if not linktype:
+            return alllinks
+        return [link for link in alllinks if link.type == linktype]
+
+    def create(self, linktype, id):
+        org = self._wi._c.organization
+        proj = self._wi._c.project
+        patch = {
+            "op": Ops.add,
+            "path": "/relations/-",
+            "value": dict(
+                rel=linktype,
+                url=f"https://dev.azure.com/{org}{proj}/_apis/wit/workItems/{id}",
+                attributes=dict(comment="Making a new link for the dependency"))
+        }
+        import logging
+        logging.warning(patch)
+        response = self._wi._c.patch(f"wit/workitems/{self._wi.id}", json=[patch], is_json=True)
+        if response.status_code != 200:
+            print(json.dumps(response.json(), indent=4))
+        response.raise_for_status()
+        self._wi.update()
+
+
 class Step:
     def __init__(self, action, result=""):
         self.action = action
@@ -80,6 +159,10 @@ class WorkItem:
     @Title.setter
     def Title(self, value):
         self._update_field("System.Title", value)
+
+    @property
+    def Links(self):
+        return Links(self)
 
     @property
     def Tags(self):
@@ -201,7 +284,7 @@ class WorkItems:
 
 
 class Patch:
-    def __init__(self, operation, field, value):
+    def __init__(self, operation, field, value=None):
         self.operation = operation
         self.field = field
         self.value = value
@@ -210,8 +293,9 @@ class Patch:
         result = {
             "op": self.operation,
             "path": f"/fields/{self.field}",
-            "value": self.value
         }
+        if self.value:
+            result['value'] = self.value
         return result
 
 
@@ -223,3 +307,4 @@ class Patches(list):
 class Ops:
     add = "add"
     replace = "replace"
+    remove = "remove"

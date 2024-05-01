@@ -1,7 +1,7 @@
 from .wi import WorkItem, WorkItems, TestCase
 from .testing import TestRun, TestResults, TestRuns, TestPlans, TestConfiguration, TestConfigurations
-from .testing import TestPoint, TestPoints
-from .wi import Wit, Step  # noqa: F401
+from .testing import TestPoint, TestPoints  # noqa: F401
+from .wi import Wit, Step, LinkType  # noqa: F401
 from .projects import Projects, Project  # noqa: F401
 from .connection import Connection
 
