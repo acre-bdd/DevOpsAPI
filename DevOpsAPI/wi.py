@@ -227,6 +227,9 @@ class WorkItem:
                 return self.fields[lookup]
         return None
 
+    def dump(self):
+        return json.dumps(self.json, indent=4)
+
 
 class TestCase(WorkItem):
     def create(self, title, area=None):

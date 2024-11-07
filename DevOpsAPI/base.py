@@ -20,6 +20,9 @@ class FunctionClass:
         update = {name: value}
         self._c.patch(f"{self.fnc}/{self.id}", json=update)
 
+    def dump(self):
+        return json.dumps(self.json, indent=4)
+
 
 class FunctionManager:
     def __init__(self, fnc, _class, _c, is_json=False):
