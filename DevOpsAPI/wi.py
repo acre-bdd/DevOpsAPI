@@ -172,6 +172,9 @@ class WorkItem:
     def Tags(self, value):
         self._update_field("System.Tags", value)
 
+    def update_field(self, fieldname, value):
+        return self._update_field(fieldname, value)
+
     def _update_field(self, fieldname, value):
         patches = Patches()
         patches.append(Patch(Ops.replace, fieldname, value))
