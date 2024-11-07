@@ -183,6 +183,10 @@ class TestPlan(FunctionClass):
     def suites(self):
         return TestPlanSuites(self._c, planid=self.id).list()
 
+    @property
+    def TestPlanSuites(self):
+        return TestPlanSuites(self._c, planid=self.id)
+
 
 class TestPlans(FunctionManager):
     def __init__(self, _c):
